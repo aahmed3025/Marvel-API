@@ -1,0 +1,81 @@
+import requests
+
+def get_pokemon(pokemon_id: int) -> dict:
+    url: str = f"https://pokeapi.co/api/v2/pokemon/{pokemon_id}"
+    response: requests.Response = requests.get(url)
+    data: dict = response.json()
+    return data
+
+def get(url):
+    return requests.get(url).json()
+
+import time
+from typing import List
+import hashlib
+
+def hash_file(filename: str) -> str:
+    return hashlib.md5(open(filename, 'rb').read()).hexdigest()
+
+# Enter your Marvel API keys here
+PUBLIC_KEY = 'your_public_key'
+PRIVATE_KEY = 'your_private_key'
+from typing import Dict, List
+
+# Enter your Marvel API keys here
+PUBLIC_KEY = 'your_public_key'
+PRIVATE_KEY
+def generate_auth_params() -> Dict[str, str]:
+
+    return {
+        'ts': str(int(time.time())),
+        'apikey': PUBLIC_KEY,
+        'hash': hash_file(PRIVATE_KEY)
+    }
+
+def get_characters(params: Dict[str, str]) -> List[Dict[str, str]]:
+    return get('https://gateway.marvel.com:443/v1/public/characters', params=params)
+
+def get_comics(params: Dict[str, str]) -> List[Dict[str, str]]:
+
+    return get('https://gateway.marvel.com:443/v1/public/comics', params=params)
+
+def get_events(params: Dict[str, str]) -> List[Dict[str, str]]:
+
+def get_characters() -> List[dict]:
+    url = 'https://gateway.marvel.com:443/v1/public/characters'
+    params = {
+        'apikey': 'd1c3f1bcab6e3eb7f9c8b2c5c1d8f7e5',
+        'limit': 100
+    }
+    response = requests.get(url, params=params)
+    data = response.json()
+    characters = data['data']['results']
+    return characters
+
+def filter_characters(characters: List[dict], name: str) -> List[dict]:
+    filtered_characters = []
+    for character in characters:
+        if name.lower() in character['name'].lower():
+            filtered_characters.append(character)
+    return filtered_characters
+
+def display_character(character: dict):
+    print(f'Name: {character["name"]}')
+    print(f'Description: {character["description"]}')
+    print(f'Comics: {character["comics"]["available"]}')
+    print(f'Series: {character["series"]["available"]}')
+    print(f'Stories: {character["stories"]["available"]}')
+    print(f'Events: {character["events"]["available"]}')
+
+def search_character():
+    name = input('Enter the name of the character: ')
+    characters = get_characters()
+    filtered_characters = filter_characters(characters, name)
+
+    if len(filtered_characters) > 0:
+        for i, character in enumerate(filtered_characters):
+            print(f'{i + 1}. {character["name"]}')
+
+        selection = input('Enter the number of the character to display details (or 0 to cancel): ')
+
+
