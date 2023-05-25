@@ -1,0 +1,85 @@
+import requests
+
+# Enter your Marvel API keys here
+PUBLIC_KEY = 'your_public_key'
+PRIVATE_KEY = 'your_private_key'
+
+def generate_auth_params():
+    timestamp = str(time.time())
+    hash_string = hashlib.md5((timestamp + PRIVATE_KEY + PUBLIC_KEY).encode()).hexdigest()
+    return {'apikey': PUBLIC_KEY, 'ts': timestamp, 'hash': hash_string}
+
+def get_characters():
+    url = 'https://gateway.marvel.com/v1/public/characters'
+    params = generate_auth_params()
+
+    response = requests.get(url, params=params)
+    data = response.json()
+
+    if response.status_code == 200:
+        characters = data['data']['results']
+        return characters
+    else:
+        print('Error:', data['message'])
+        return []
+
+def filter_characters(characters, filter_name):
+    filtered_characters = []
+    for character in characters:
+        if filter_name.lower() in character['name'].lower():
+            filtered_characters.append(character)
+    return filtered_characters
+
+def sort_characters(characters, sort_key):
+    return sorted(characters, key=lambda c: c[sort_key])
+
+def display_character(character):
+    print('Name:', character['name'])
+    print('Description:', character['description'])
+    print('Thumbnail:', character['thumbnail']['path'] + '.' + character['thumbnail']['extension'])
+    print('Comics:', character['comics']['available'])
+    print('Series:', character['series']['available'])
+    print('Stories:', character['stories']['available'])
+    print('Events:', character['events']['available'])
+    print('---------------------')
+
+def search_character():
+    name = input('Enter the name of the character: ')
+    characters = get_characters()
+    filtered_characters = filter_characters(characters, name)
+
+    if len(filtered_characters) > 0:
+        for i, character in enumerate(filtered_characters):
+            print(f'{i + 1}. {character["name"]}')
+
+        selection = input('Enter the number of the character to display details (or 0 to cancel): ')
+        if selection.isdigit() and int(selection) > 0 and int(selection) <= len(filtered_characters):
+            character = filtered_characters[int(selection) - 1]
+            display_character(character)
+        else:
+            print('Invalid selection or canceled.')
+    else:
+        print('No matching characters found.')
+
+def main():
+    characters = get_characters()
+    if characters:
+        print('--- Marvel Characters ---')
+        for character in characters:
+            print(character['name'])
+        print('------------------------')
+
+        while True:
+            print('1. Search for a character')
+            print('2. Exit')
+            choice = input('Enter your choice: ')
+
+            if choice == '1':
+                search_character()
+            elif choice == '2':
+                break
+            else:
+                print('Invalid choice. Please try again.')
+
+if __name__ == '__main__':
+    main()
